@@ -134,7 +134,7 @@
 				<configuration>
 					<nodeVersion>v20.11.1</nodeVersion> <!-- Use the Node version required for your project -->
 					<npmVersion>10.5.0</npmVersion> <!-- Use the npm version required for your project -->
-					<workingDirectory>src/main/frontend</workingDirectory> <!-- Your frontend directory -->
+					<workingDirectory>${project.basedir}/src/main/my-react-app</workingDirectory> <!-- Your frontend directory -->
 				</configuration>
 				<executions>
 					<execution>
