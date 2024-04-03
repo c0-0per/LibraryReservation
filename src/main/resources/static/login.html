@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Registration</title>
+    <style>
+        /* Add your CSS styles here */
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div id="login-container">
+    <h2>Login</h2>
+    <form id="login-form">
+        <label for="login-username">Username:</label>
+        <input type="text" id="login-username" required>
+
+        <label for="login-password">Password:</label>
+        <input type="password" id="login-password" required>
+
+        <button type="submit">Login</button>
+    </form>
+    <p>No account? <button onclick="showRegister()">Register here</button></p>
+</div>
+
+<div id="register-container" class="hidden">
+    <h2>Register</h2>
+    <form id="registration-form">
+        <label for="register-username">Username:</label>
+        <input type="text" id="register-username" required>
+
+        <label for="register-email">Email:</label>
+        <input type="email" id="register-email" required>
+
+        <label for="register-password">Password:</label>
+        <input type="password" id="register-password" required>
+
+        <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <button onclick="showLogin()">Login here</button></p>
+</div>
+
+<script>
+    function showLogin() {
+        document.getElementById('login-container').style.display = 'block';
+        document.getElementById('register-container').style.display = 'none';
+    }
+
+    function showRegister() {
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('register-container').style.display = 'block';
+    }
+
+    // // Here you would attach event listeners to the forms to handle submission
+    // document.getElementById('login-form').addEventListener('submit', function(event) {
+    //     event.preventDefault();
+    //     // Implement your login logic or AJAX request here
+    // });
+
+
+
+    document.getElementById('registration-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Get the values from the form inputs
+        const username = document.getElementById('register-username').value;
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
+
+        // Create the request payload
+        const userDto = {
+            username: username,
+            email: email,
+            password: password
+        };
+
+        // Make the POST request to the server
+        fetch('users/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userDto) // Convert the JavaScript object to a JSON string
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json(); // Here we get the response body as JSON
+            })
+            .then(data => {
+                console.log('Success:', data);
+                // Here you might want to redirect the user or clear the form, etc.
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    });
+
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Get the values from the form inputs
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+
+        // Make the POST request to the server
+        fetch('http://localhost:8080/users/authenticate', { // Make sure this matches your API endpoint
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password }) // Convert the credentials to a JSON string
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json(); // Parse the JSON in the response body
+            })
+            .then(data => {
+                // The server should return a response containing the JWT token upon successful authentication
+                console.log('Success:', data);
+
+                // Store the token in local storage or session storage
+                localStorage.setItem('token', data.token);
+
+                // Redirect the user or perform other actions after successful login
+                window.location.href = '/try.html'; // Update with the path you want to redirect to
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                // Handle login errors (e.g., display an error message to the user)
+            });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+Private library
+
+The Private Library system is a Java-based application designed to assist individuals who frequently lend books or
+other similar content (magazines, newspapers) to manage their private libraries effectively.
+
+Main functions of the application:
+
+* User registration and authentication: users can create accounts and log in with different roles,
+such as “guest” or “librarian”. Librarians have additional privileges, such as managing lending requests and reservations,
+adding/removing books.
+
+* Book Management: ♥ Add books to the library with the details like title, author, publication date, genre,
+content summary and picture of the book.  + remove books from Library.                                                                                                                                                                       ♥ User-provided assessments or reviews for each book, as well as possibility of reservation and lending by user.
+
+* Library status overview: display a list of all books in the Library
+(and showing which books are currently available, which are lent out, which are reserved).
+

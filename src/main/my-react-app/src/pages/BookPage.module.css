@@ -1,0 +1,80 @@
+.bookPage {
+    display: flex;
+    padding-top: 100px;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0; /* Same background color as Home page */
+}
+
+.bookDetails {
+    width: 100%;
+    max-width: 1200px; /* Adjust the max-width as needed */
+    margin: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.bookCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px; /* Adjust to match the size on the Home page */
+}
+
+.bookCover {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.bookInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.bookTitle {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.bookPublisher, .bookYear, .bookGenre {
+    font-size: 1rem;
+    color: #666;
+}
+
+.bookDescription {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #444;
+}
+
+.reserveButton {
+    background-color: #0056b3;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    align-self: center; /* Center button in the card */
+}
+
+/* You may need to add media queries to handle responsiveness */
+@media (max-width: 768px) {
+    .bookDetails {
+        flex-direction: column;
+    }
+}
+

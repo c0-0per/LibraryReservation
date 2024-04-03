@@ -1,0 +1,84 @@
+/* CartPage.module.css */
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.cartLayout {
+    background-color: #f9f9f9;
+    border: 1px solid #e1e1e1;
+    border-radius: 4px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.cartItems {
+    margin-bottom: 30px;
+}
+
+.cartItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    background-color: #ffffff;
+    border: 1px solid #e1e1e1;
+    border-radius: 4px;
+    padding: 10px 15px;
+}
+
+.cartItem:last-child {
+    margin-bottom: 0;
+}
+
+/* CartPage.module.css */
+/* Other styles... */
+
+.removeButton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px; /* Size of the button */
+    height: 36px; /* Size of the button */
+    border-radius: 50%; /* Make it round */
+    transition: background-color 0.2s; /* Smooth transition for background color */
+}
+
+.removeButton:hover {
+    background-color: #e0e0e0; /* Grey background on hover */
+}
+
+/*.removeButton:hover .removeIcon {*/
+/*    stroke: #ff4d4f; !* Icon stroke color change on hover *!*/
+/*}*/
+
+.removeIcon {
+    stroke: #000;
+    width: 24px;
+    height: 24px;
+    transition: stroke 0.3s ease; /* Transition for the stroke color */
+}
+
+.makeReservationButton {
+    background-color: #007bff; /* Blue color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease-in-out; /* Smooth background transition */
+}
+
+.makeReservationButton:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* You can still have the media queries from before for responsiveness */
+/* Media queries... */

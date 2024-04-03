@@ -1,0 +1,834 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .search-bar-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: calc(100% - 80px);
+            margin: 0 auto;
+        }
+        .search-bar {
+            width: 50%;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+            font-size: 16px;
+            outline: none;
+        }
+        .search-bar:focus {
+            border-color: #0056b3;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .book-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 20px;
+            gap: 20px;
+        }
+        .book {
+            background: #ffffff;
+            border: none;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            width: 30%;
+            margin-bottom: 20px;
+        }
+        .book:hover {
+            transform: translateY(-5px);
+        }
+        .book h4, .book p {
+            margin: 0;
+            padding: 0;
+        }
+        .book p {
+            color: #555;
+            font-size: 14px;
+        }
+        .book img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* Popup Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .popup-window {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: auto;
+            max-width: 400px;
+            text-align: center;
+            transform: translateY(-50px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-window.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-popup {
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .popup-content p {
+            margin-bottom: 30px;
+        }
+
+        /* Styles for the user icon in place of login/register button */
+        #user-info img {
+            height: 50px; /* Adjust the height as needed */
+            cursor: pointer; /* Changes the cursor to a pointer to indicate it's clickable */
+        }
+
+        .hidden {
+            display: none;
+        }
+        /* Add additional styling as needed */
+    </style>
+</head>
+<body>
+
+<header>
+    <a id="go-home" href="/try.html">
+        <img src= "home.png" alt="Go Home" style="height: 50px;"> <!-- Adjust the height as needed -->
+    </a>
+    <div class="search-bar-container">
+        <input class="search-bar" type="search" placeholder="Search for books..." />
+    </div>
+    <div id="user-info" class="user-info">
+        <!-- Image will be conditionally displayed via JavaScript -->
+        <img id="user-icon" src="user.png" alt="Login / Register" class="hidden" style="height: 50px;"> <!-- Adjust the height as needed -->
+    </div>
+</header>
+
+<div class="book-container" id="book-container">
+    <!-- Books will be dynamically inserted here -->
+</div>
+
+<div id="popup-overlay" class="popup-overlay hidden">
+    <!-- Pop-up Window -->
+    <div id="popup-window" class="popup-window">
+        <div class="popup-header">
+            <span class="popup-title">Welcome!</span>
+            <button id="close-popup" class="close-popup">&times;</button>
+        </div>
+        <div id="popup-content" class="popup-content">
+            <p>This is a simple pop-up window example.</p>
+            <a href="/login.html" class="login-link">Login / Register</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     const loginRegisterBtn = document.getElementById('login-register-btn');
+    //     const popupOverlay = document.getElementById('popup-overlay');
+    //     const closePopupBtn = document.getElementById('close-popup');
+    //     const popupWindow = document.getElementById('popup-window');
+    //
+    //     // Initially check if a user token is present and set up UI accordingly
+    //     checkAuthentication();
+    //
+    //     // Handle login/register button click to show popup
+    //     loginRegisterBtn.addEventListener('click', function() {
+    //         popupOverlay.classList.remove('hidden');
+    //     });
+    //
+    //     // Handle closing the popup
+    //     closePopupBtn.addEventListener('click', function() {
+    //         popupOverlay.classList.add('hidden');
+    //     });
+    //
+    //     // Prevent popup from closing when clicking inside the window
+    //     popupWindow.addEventListener('click', function(e) {
+    //         e.stopPropagation();
+    //     });
+    //
+    //     // Close popup when clicking outside of the popup window
+    //     popupOverlay.addEventListener('click', function() {
+    //         this.classList.add('hidden');
+    //     });
+    // });
+    //
+    // function checkAuthentication() {
+    //     const token = localStorage.getItem('token');
+    //     if (token) {
+    //         fetch('http://localhost:8080/users/info', {
+    //             method: 'GET',
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         })
+    //             .then(response => {
+    //                 if (!response.ok) throw new Error('Response not OK');
+    //                 return response.json();
+    //             })
+    //             .then(data => {
+    //                 setupUIForLoggedInUser(data.username);
+    //                 fetchBooks(true);
+    //             })
+    //             .catch(error => {
+    //                 console.error('Error fetching user info:', error);
+    //                 setupUIForLoggedOutUser();
+    //                 fetchBooks(false);
+    //             });
+    //     } else {
+    //         setupUIForLoggedOutUser();
+    //         fetchBooks(false);
+    //     }
+    // }
+    //
+    // function setupUIForLoggedInUser(username) {
+    //     const loginRegisterBtn = document.getElementById('login-register-btn');
+    //     loginRegisterBtn.textContent = username; // Set the button text to the username
+    //     loginRegisterBtn.classList.remove('hidden');
+    //     // Here you can add more UI adjustments for logged in users
+    // }
+    //
+    // function setupUIForLoggedOutUser() {
+    //     const loginRegisterBtn = document.getElementById('login-register-btn');
+    //     loginRegisterBtn.textContent = 'Login / Register';
+    //     loginRegisterBtn.classList.remove('hidden');
+    //     // Here you can add more UI adjustments for logged out users
+    // }
+    document.addEventListener('DOMContentLoaded', function() {
+        const userIcon = document.getElementById('user-icon'); // Assuming you have added this id to the user image in the HTML
+        const popupOverlay = document.getElementById('popup-overlay');
+        const popupWindow = document.getElementById('popup-window');
+        const closePopupBtn = document.getElementById('close-popup');
+
+        userIcon.addEventListener('click', function() {
+            popupOverlay.classList.add('active');
+            popupWindow.classList.add('active');
+        });
+
+        closePopupBtn.addEventListener('click', function() {
+            popupOverlay.classList.remove('active');
+            popupWindow.classList.remove('active');
+        });
+
+        popupOverlay.addEventListener('click', function() {
+            this.classList.remove('active');
+            popupWindow.classList.remove('active');
+        });
+
+        // Stop propagation for click inside the popup window
+        popupWindow.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+
+        // Initially check if a user token is present and set up UI accordingly
+        checkAuthentication();
+
+
+    });
+
+    function checkAuthentication() {
+        const token = localStorage.getItem('token');
+        if (token) {
+            authenticateUser(token);
+        } else {
+            setupLoginButton(false);
+            fetchBooks(false);
+        }
+    }
+
+    function authenticateUser(token) {
+        fetch('http://localhost:8080/users/info', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Response not OK');
+                return response.json();
+            })
+            .then(data => {
+                setupLoginButton(true, data.username);
+                fetchBooks(true);
+            })
+            .catch(error => {
+                console.error('Error fetching user info:', error);
+                setupLoginButton(false);
+                fetchBooks(false);
+            });
+    }
+
+    function setupLoginButton(isLoggedIn, username = '') {
+        const userIcon = document.getElementById('user-icon');
+        const popupOverlay = document.getElementById('popup-overlay');
+        const popupContent = document.getElementById('popup-content');
+
+        if (isLoggedIn) {
+            userIcon.src = 'user.png'; // Set the source to your uploaded user image
+            userIcon.alt = username;
+            userIcon.onclick = function() {
+                popupContent.innerHTML = `<p>It is your account, ${username}.</p>`;
+                popupOverlay.classList.remove('hidden');
+            };
+        } else {
+            userIcon.src = 'user.png'; // Replace with your login/register icon
+            userIcon.alt = 'Login / Register';
+            userIcon.onclick = function() {
+                popupContent.innerHTML = `
+            <p>Please log in to access your account:</p>
+            <a href="/login.html" class="login-link">Log In / Register</a>
+        `;
+                popupOverlay.classList.remove('hidden');
+            };
+        }
+        userIcon.classList.remove('hidden'); // Ensure icon is visible
+    }
+    function fetchBooks(isUserLoggedIn) {
+        fetch('http://localhost:8080/api/titles')
+            .then(response => response.json())
+            .then(books => {
+                const bookContainer = document.getElementById('book-container');
+                bookContainer.innerHTML = ''; // Clear existing content
+
+                books.forEach(book => {
+                    const bookDiv = document.createElement('div');
+                    bookDiv.className = 'book';
+                    let bookDetailsButton = '';
+
+                    if (isUserLoggedIn) {
+                        bookDetailsButton = `<button onclick="openBookPage('${book.id}')">View Details</button>`;
+                    }
+
+                    bookDiv.innerHTML = `
+                    <img src="${book.coverImageUrl}" alt="Cover image">
+                    <h4>${book.nameOfBook}</h4>
+                    <p>${book.descriptionOfBook}</p>
+                    ${bookDetailsButton}
+                `;
+                    bookContainer.appendChild(bookDiv);
+                });
+            })
+            .catch(error => console.error('Error fetching books:', error));
+    }
+
+    function openBookPage(bookId) {
+        window.location.href = `/book-details.html?bookId=${bookId}`;
+    }
+
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     const userInfo = document.getElementById('user-info');
+    //     const loginRegisterBtn = document.getElementById('login-register-btn');
+    //     const popupOverlay = document.getElementById('popup-overlay');
+    //     const closePopupBtn = document.getElementById('close-popup');
+    //
+    //     // Handle login/register button click to show popup
+    //     loginRegisterBtn.addEventListener('click', function() {
+    //         popupOverlay.classList.remove('hidden');
+    //     });
+    //
+    //     // Handle closing the popup
+    //     closePopupBtn.addEventListener('click', function() {
+    //         popupOverlay.classList.add('hidden');
+    //     });
+    //
+    //     // Prevent popup from closing when clicking inside the window
+    //     document.getElementById('popup-window').addEventListener('click', function(e) {
+    //         e.stopPropagation();
+    //     });
+    //
+    //     // Close popup when clicking outside of the popup window
+    //     popupOverlay.addEventListener('click', function() {
+    //         this.classList.add('hidden');
+    //     });
+    //
+    //     // Check if the user is logged in
+    //     const token = localStorage.getItem('token');
+    //     if (token) {
+    //         // If logged in, adjust the UI accordingly
+    //         // This is where you would fetch user info and adjust the loginRegisterBtn text
+    //         // For now, we'll just simulate a logged-in state
+    //         loginRegisterBtn.textContent = 'Username'; // Replace with actual username
+    //         loginRegisterBtn.classList.remove('hidden');
+    //         fetchBooks(true);
+    //     } else {
+    //         // If not logged in, show the login/register button
+    //         loginRegisterBtn.classList.remove('hidden');
+    //         fetchBooks(false);
+    //     }
+    // });
+    //
+    // function fetchBooks() {
+    //     fetch('http://localhost:8080/api/titles')
+    //         .then(response => response.json())
+    //         .then(books => {
+    //             const bookContainer = document.getElementById('book-container');
+    //             bookContainer.innerHTML = ''; // Clear existing content
+    //             books.forEach(book => {
+    //                 const bookDiv = document.createElement('div');
+    //                 bookDiv.className = 'book';
+    //                 bookDiv.innerHTML = `
+    //                 <img src="${book.coverImageUrl}" alt="Cover image">
+    //                 <h4>${book.title}</h4>
+    //                 <p>${book.description}</p>
+    //                 <button class="view-details-btn">View Details</button>
+    //             `;
+    //                 bookContainer.appendChild(bookDiv);
+    //             });
+    //         })
+    //         .catch(error => console.error('Error fetching books:', error));
+    // }
+    //
+    // function openBookPage(bookId) {
+    //     // Navigate to the book's detail page
+    //     window.location.href = `/book-details.html?bookId=${bookId}`;
+    // }
+</script>
+</body>
+</html>
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Book Library</title>-->
+<!--    <style>-->
+<!--        body {-->
+<!--            font-family: Arial, sans-serif;-->
+<!--            margin: 0;-->
+<!--            padding: 0;-->
+<!--            box-sizing: border-box;-->
+<!--        }-->
+<!--        header {-->
+<!--            background-color: #f8f9fa;-->
+<!--            border-bottom: 1px solid #e0e0e0;-->
+<!--            padding: 20px 40px;-->
+<!--            display: flex;-->
+<!--            justify-content: space-between;-->
+<!--            align-items: center;-->
+<!--        }-->
+<!--        .book-container {-->
+<!--            display: flex;-->
+<!--            flex-wrap: wrap;-->
+<!--            padding: 20px;-->
+<!--        }-->
+<!--        .book {-->
+<!--            border: 1px solid #ddd;-->
+<!--            margin: 10px;-->
+<!--            padding: 10px;-->
+<!--            width: calc(33.333% - 20px);-->
+<!--            box-shadow: 0 2px 4px rgba(0,0,0,0.1);-->
+<!--        }-->
+<!--        .book h4, .book p {-->
+<!--            margin: 5px 0;-->
+<!--        }-->
+<!--        .user-info {-->
+<!--            cursor: pointer;-->
+<!--        }-->
+<!--        /* Existing styles for body, header, book-container, etc. */-->
+
+<!--        /* Styles for pop-up */-->
+<!--        .popup-overlay {-->
+<!--            position: fixed;-->
+<!--            top: 0;-->
+<!--            left: 0;-->
+<!--            width: 100%;-->
+<!--            height: 100%;-->
+<!--            background-color: rgba(0, 0, 0, 0.5);-->
+<!--            display: flex;-->
+<!--            justify-content: center;-->
+<!--            align-items: center;-->
+<!--            z-index: 1000;-->
+<!--        }-->
+
+<!--        .popup-window {-->
+<!--            background: #fff;-->
+<!--            padding: 20px;-->
+<!--            border-radius: 5px;-->
+<!--            box-shadow: 0 2px 5px rgba(0,0,0,0.2);-->
+<!--            width: 90%;-->
+<!--            max-width: 400px;-->
+<!--        }-->
+
+<!--        .popup-header {-->
+<!--            display: flex;-->
+<!--            justify-content: space-between;-->
+<!--            align-items: center;-->
+<!--            margin-bottom: 20px;-->
+<!--        }-->
+
+<!--        .close-popup {-->
+<!--            font-size: 24px;-->
+<!--            background: none;-->
+<!--            border: none;-->
+<!--            cursor: pointer;-->
+<!--        }-->
+
+<!--        .hidden {-->
+<!--            display: none;-->
+<!--        }-->
+<!--        .login-link {-->
+<!--            display: inline-block;-->
+<!--            margin-top: 10px;-->
+<!--            padding: 8px;-->
+<!--            background-color: #007bff;-->
+<!--            color: #ffffff;-->
+<!--            text-decoration: none;-->
+<!--            border-radius: 5px;-->
+<!--        }-->
+
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<header>-->
+<!--    <h1>Book Library</h1>-->
+<!--    <div id="user-info" class="user-info">-->
+<!--    &lt;!&ndash; Button will be conditionally displayed via JavaScript &ndash;&gt;-->
+<!--    <button id="login-register-btn" class="hidden">Login / Register</button>-->
+<!--</div>-->
+<!--</header>-->
+
+<!--<div class="book-container" id="book-container">-->
+<!--    &lt;!&ndash; Books will be displayed here &ndash;&gt;-->
+<!--</div>-->
+
+<!--<div id="popup-overlay" class="popup-overlay hidden">-->
+<!--    &lt;!&ndash; Pop-up Window &ndash;&gt;-->
+<!--    <div id="popup-window" class="popup-window">-->
+<!--        <div class="popup-header">-->
+<!--            <span class="popup-title">Welcome!</span>-->
+<!--            <button id="close-popup" class="close-popup">&times;</button>-->
+<!--        </div>-->
+<!--        <div class="popup-content">-->
+<!--            <p>This is a simple pop-up window example.</p>-->
+<!--            &lt;!&ndash; Add more content here as needed &ndash;&gt;-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+<!--<script>-->
+<!--    // document.addEventListener('DOMContentLoaded', function() {-->
+<!--    //     const loginRegisterBtn = document.getElementById('login-register-btn');-->
+<!--    //-->
+<!--    //     // Check for token to adjust initial UI state-->
+<!--    //     const token = localStorage.getItem('token');-->
+<!--    //     if (token) {-->
+<!--    //         authenticateUser(token);-->
+<!--    //     } else {-->
+<!--    //         setupLoginButton(false); // Setup login button for non-authenticated users-->
+<!--    //     }-->
+<!--    //-->
+<!--    //     // Setup event listener for closing the pop-up-->
+<!--    //     document.getElementById('close-popup').addEventListener('click', function() {-->
+<!--    //         document.getElementById('popup-overlay').classList.add('hidden');-->
+<!--    //     });-->
+<!--    // });-->
+<!--    //-->
+<!--    // function authenticateUser(token) {-->
+<!--    //     fetch('http://localhost:8080/users/info', {-->
+<!--    //         method: 'GET',-->
+<!--    //         headers: {-->
+<!--    //             'Authorization': `Bearer ${token}`,-->
+<!--    //             'Content-Type': 'application/json'-->
+<!--    //         }-->
+<!--    //     })-->
+<!--    //         .then(response => {-->
+<!--    //             if (!response.ok) throw new Error('Response not OK');-->
+<!--    //             return response.json();-->
+<!--    //         })-->
+<!--    //         .then(data => {-->
+<!--    //             setupLoginButton(true, data.username);-->
+<!--    //             fetchBooks(true);-->
+<!--    //         })-->
+<!--    //         .catch(error => {-->
+<!--    //             console.error('Error fetching user info:', error);-->
+<!--    //             setupLoginButton(false);-->
+<!--    //             fetchBooks(false);-->
+<!--    //         });-->
+<!--    // }-->
+<!--    //-->
+<!--    // function setupLoginButton(isLoggedIn, username = '') {-->
+<!--    //     function setupLoginButton(isLoggedIn) {-->
+<!--    //         const loginRegisterBtn = document.getElementById('login-register-btn');-->
+<!--    //         const popupOverlay = document.getElementById('popup-overlay');-->
+<!--    //         const popupContent = document.getElementById('popup-content');-->
+<!--    //-->
+<!--    //         if (isLoggedIn) {-->
+<!--    //             // Setup for logged-in state; adjust as needed-->
+<!--    //             console.log('User is logged in.');-->
+<!--    //         } else {-->
+<!--    //             loginRegisterBtn.textContent = 'Login / Register';-->
+<!--    //             loginRegisterBtn.classList.remove('hidden'); // Ensure button is visible-->
+<!--    //             loginRegisterBtn.onclick = function() {-->
+<!--    //                 popupContent.innerHTML = `-->
+<!--    //             <p>Please log in to access your account:</p>-->
+<!--    //             <a href="/login.html" class="login-link">Log In</a>-->
+<!--    //         `;-->
+<!--    //                 popupOverlay.classList.remove('hidden');-->
+<!--    //             };-->
+<!--    //         }-->
+<!--    //     }-->
+<!--    // }-->
+<!--    //-->
+<!--    // function showLoginPopup() {-->
+<!--    //     const popupOverlay = document.getElementById('popup-overlay');-->
+<!--    //     const popupContent = document.getElementById('popup-content');-->
+<!--    //-->
+<!--    //     popupContent.innerHTML = `-->
+<!--    //     <p>Please log in to access your account:</p>-->
+<!--    //     <a href="/login.html" class="login-link">Log In</a>-->
+<!--    // `;-->
+<!--    //-->
+<!--    //     popupOverlay.classList.remove('hidden');-->
+<!--    // }-->
+<!--    //-->
+<!--    // function fetchBooks(isUserLoggedIn) {-->
+<!--    //     fetch('http://localhost:8080/api/titles')-->
+<!--    //         .then(response => response.json())-->
+<!--    //         .then(books => {-->
+<!--    //             const bookContainer = document.getElementById('book-container');-->
+<!--    //             bookContainer.innerHTML = '';-->
+<!--    //             books.forEach(book => {-->
+<!--    //                 const bookDiv = document.createElement('div');-->
+<!--    //                 bookDiv.className = 'book';-->
+<!--    //                 let bookHtml = `<h4>${book.nameOfBook}</h4><p>${book.descriptionOfBook}</p>`;-->
+<!--    //                 if (isUserLoggedIn) {-->
+<!--    //                     bookHtml += `<button onclick="openBookPage('${book.id}')">View Details</button>`;-->
+<!--    //                 }-->
+<!--    //                 bookDiv.innerHTML = bookHtml;-->
+<!--    //                 bookContainer.appendChild(bookDiv);-->
+<!--    //             });-->
+<!--    //         })-->
+<!--    //         .catch(error => console.error('Error fetching books:', error));-->
+<!--    // }-->
+<!--    //-->
+<!--    // function openBookPage(bookId) {-->
+<!--    //     window.location.href = `/book-details.html?bookId=${bookId}`;-->
+<!--    // }-->
+
+<!--    // document.addEventListener('DOMContentLoaded', function() {-->
+<!--    //     const loginRegisterBtn = document.getElementById('login-register-btn');-->
+<!--    //     // Remove the initial hiding of the button-->
+<!--    //     // loginRegisterBtn.style.display = 'none'; // This line can be removed-->
+<!--    //-->
+<!--    //     const token = localStorage.getItem('token');-->
+<!--    //     if (token) {-->
+<!--    //         authenticateUser(token);-->
+<!--    //     } else {-->
+<!--    //         setupLoginButton(false); // Show the button immediately, but configured for logged-out state-->
+<!--    //         fetchBooks(false);-->
+<!--    //     }-->
+<!--    //-->
+<!--    //     // Show pop-up after a delay-->
+<!--    //     setTimeout(showPopup, 2000);-->
+<!--    //     document.getElementById('close-popup').addEventListener('click', function() {-->
+<!--    //         document.getElementById('popup-overlay').classList.add('hidden');-->
+<!--    //     });-->
+<!--    // });-->
+<!--    //-->
+<!--    // function authenticateUser(token) {-->
+<!--    //     fetch('http://localhost:8080/users/info', {-->
+<!--    //         method: 'GET',-->
+<!--    //         headers: {-->
+<!--    //             'Authorization': `Bearer ${token}`,-->
+<!--    //             'Content-Type': 'application/json'-->
+<!--    //         }-->
+<!--    //     })-->
+<!--    //         .then(response => {-->
+<!--    //             if (!response.ok) throw new Error('Response not OK');-->
+<!--    //             return response.json();-->
+<!--    //         })-->
+<!--    //         .then(data => {-->
+<!--    //             setupLoginButton(true, data.username);-->
+<!--    //             fetchBooks(true);-->
+<!--    //         })-->
+<!--    //         .catch(error => {-->
+<!--    //             console.error('Error fetching user info:', error);-->
+<!--    //             setupLoginButton(false);-->
+<!--    //             fetchBooks(false);-->
+<!--    //         });-->
+<!--    // }-->
+<!--    //-->
+<!--    // function setupLoginButton(isLoggedIn, username = '') {-->
+<!--    //     const loginRegisterBtn = document.getElementById('login-register-btn');-->
+<!--    //     if (isLoggedIn) {-->
+<!--    //         loginRegisterBtn.textContent = username;-->
+<!--    //         // Assume some user profile handling if logged in-->
+<!--    //     } else {-->
+<!--    //         loginRegisterBtn.textContent = 'Login / Register';-->
+<!--    //         // Update click event to show pop-up instead of redirect-->
+<!--    //         loginRegisterBtn.onclick = showLoginPopup;-->
+<!--    //     }-->
+<!--    //     // Make sure the button is visible-->
+<!--    //     loginRegisterBtn.classList.remove('hidden');-->
+<!--    // }-->
+<!--    //-->
+<!--    // function fetchBooks(isUserLoggedIn) {-->
+<!--    //     fetch('http://localhost:8080/api/titles') // Adjust this endpoint accordingly-->
+<!--    //         .then(response => response.json())-->
+<!--    //         .then(books => {-->
+<!--    //             const bookContainer = document.getElementById('book-container');-->
+<!--    //             bookContainer.innerHTML = ''; // Clear existing content-->
+<!--    //             books.forEach(book => {-->
+<!--    //                 const bookDiv = document.createElement('div');-->
+<!--    //                 bookDiv.className = 'book';-->
+<!--    //                 let bookHtml = `-->
+<!--    //                 <h4>${book.nameOfBook}</h4>-->
+<!--    //                 <p>${book.descriptionOfBook}</p>-->
+<!--    //             `;-->
+<!--    //                 if (isUserLoggedIn) {-->
+<!--    //                     bookHtml += `<button onclick="openBookPage('${book.id}')">View Details</button>`;-->
+<!--    //                 }-->
+<!--    //                 bookDiv.innerHTML = bookHtml;-->
+<!--    //                 bookContainer.appendChild(bookDiv);-->
+<!--    //             });-->
+<!--    //         })-->
+<!--    //         .catch(error => console.error('Error fetching books:', error));-->
+<!--    // }-->
+<!--    //-->
+<!--    // function openBookPage(bookId) {-->
+<!--    //     window.location.href = `/book-details.html?bookId=${bookId}`;-->
+<!--    // }-->
+<!--    //-->
+<!--    // function showPopup() {-->
+<!--    //     document.getElementById('popup-overlay').classList.remove('hidden');-->
+<!--    // }-->
+<!--    document.addEventListener('DOMContentLoaded', function() {-->
+<!--        const userInfo = document.getElementById('user-info');-->
+<!--        const loginRegisterBtn = document.getElementById('login-register-btn');-->
+
+<!--        // Initially hide the login/register button to prevent flashing-->
+<!--        loginRegisterBtn.style.display = 'none';-->
+
+<!--        const token = localStorage.getItem('token');-->
+<!--        if (token) {-->
+<!--            fetch('http://localhost:8080/users/info', {-->
+<!--                method: 'GET',-->
+<!--                headers: {-->
+<!--                    'Authorization': `Bearer ${token}`,-->
+<!--                    'Content-Type': 'application/json'-->
+<!--                }-->
+<!--            })-->
+<!--                .then(response => {-->
+<!--                    if (!response.ok) {-->
+<!--                        throw new Error('Response not OK');-->
+<!--                    }-->
+<!--                    return response.json();-->
+<!--                })-->
+<!--                .then(data => {-->
+<!--                    loginRegisterBtn.textContent = data.username;-->
+<!--                    loginRegisterBtn.style.display = 'block'; // Show button with username-->
+<!--                    fetchBooks(true); // User is logged in, fetch books with "View Details" button-->
+<!--                })-->
+<!--                .catch(error => {-->
+<!--                    console.error('Error fetching user info:', error);-->
+<!--                    setupLoginButton();-->
+<!--                    fetchBooks(false); // User is not logged in, fetch books without "View Details" button-->
+<!--                });-->
+<!--        } else {-->
+<!--            setupLoginButton();-->
+<!--            fetchBooks(false); // User is not logged in, fetch books without "View Details" button-->
+<!--        }-->
+<!--    });-->
+
+<!--    function setupLoginButton() {-->
+<!--        const loginRegisterBtn = document.getElementById('login-register-btn');-->
+<!--        loginRegisterBtn.textContent = 'Login / Register';-->
+<!--        loginRegisterBtn.style.display = 'block'; // Show the login/register button-->
+<!--        loginRegisterBtn.onclick = function() {-->
+<!--            window.location.href = '/login.html'; // Redirect to the login page-->
+<!--        };-->
+<!--    }-->
+
+<!--    function fetchBooks(isUserLoggedIn) {-->
+<!--        fetch('http://localhost:8080/api/titles') // Adjust this endpoint accordingly-->
+<!--            .then(response => response.json())-->
+<!--            .then(books => {-->
+<!--                const bookContainer = document.getElementById('book-container');-->
+<!--                bookContainer.innerHTML = ''; // Clear existing content-->
+<!--                books.forEach(book => {-->
+<!--                    const bookDiv = document.createElement('div');-->
+<!--                    bookDiv.className = 'book';-->
+<!--                    let bookHtml = `-->
+<!--                <h4>${book.nameOfBook}</h4>-->
+<!--                <p>${book.descriptionOfBook}</p>-->
+<!--                &lt;!&ndash; Add more book details here &ndash;&gt;-->
+<!--            `;-->
+<!--                    if (isUserLoggedIn) {-->
+<!--                        bookHtml += `<button onclick="openBookPage('${book.id}')">View Details</button>`;-->
+<!--                    }-->
+<!--                    bookDiv.innerHTML = bookHtml;-->
+<!--                    bookContainer.appendChild(bookDiv);-->
+<!--                });-->
+<!--            })-->
+<!--            .catch(error => console.error('Error fetching books:', error));-->
+<!--    }-->
+
+<!--    // Function to navigate to the book's detail page-->
+<!--    function openBookPage(bookId) {-->
+<!--        window.location.href = `/book-details.html?bookId=${bookId}`;-->
+<!--    }-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->

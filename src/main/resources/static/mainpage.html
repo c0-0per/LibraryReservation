@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        /* Add your CSS styling here */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="user-content" class="hidden">
+    <h1 id="welcome-message">Welcome, User!</h1>
+    <p>This content is only visible to logged-in users.</p>
+    <!-- User-specific content here -->
+</div>
+
+<div id="non-user-content">
+    <h1>Please Log In</h1>
+    <p>You must be logged in to view this content.</p>
+    <!-- Possibly add a login link or button here -->
+    <a href="/login.html">Go to Login</a>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const token = localStorage.getItem('token');
+        if (token) {
+            fetch('http://localhost:8080/users/info', { // Adjust this to your actual endpoint
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Unauthorized - User cannot be authenticated.');
+                    }
+                    return response.json(); // Assuming the endpoint returns JSON
+                })
+                .then(data => {
+                    document.getElementById('user-content').classList.remove('hidden');
+                    document.getElementById('non-user-content').classList.add('hidden');
+                    document.getElementById('welcome-message').textContent = `Welcome, ${data.username}!`; // Update this line to use the username
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('user-content').classList.add('hidden');
+                    document.getElementById('non-user-content').classList.remove('hidden');
+                    localStorage.removeItem('token'); // Clear the invalid token
+                    // Optionally, redirect to login page
+                    window.location.href = '/login.html';
+                });
+        } else {
+            document.getElementById('user-content').classList.add('hidden');
+            document.getElementById('non-user-content').classList.remove('hidden');
+        }
+    });
+</script>
+</body>
+</html>
