@@ -53,7 +53,7 @@ public class WebSequrityConfig extends WebSecurityConfigurerAdapter{
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/users/authenticate", "/users/**", "/api/titles/**", "/api/authors/**", "/api/genres/**", "/login.html", "/mainpage.html", "/favicon.ico", "/try.html", "/home.png", "/user.png").permitAll()
+                .antMatchers("/users/authenticate", "/users/**", "/api/titles/**", "/api/authors/**", "/api/genres/**", "/login.html", "/mainpage.html", "/favicon.ico", "/try.html", "/home.png", "/user.png", "/index.html", "/").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedEntryPoint).and()
@@ -62,10 +62,10 @@ public class WebSequrityConfig extends WebSecurityConfigurerAdapter{
         http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
     }
 
-//    @Bean
-//    public BCryptPasswordEncoder encoder(){
-//        return new BCryptPasswordEncoder();
-//    }
+    @Bean
+    public BCryptPasswordEncoder encoder(){
+        return new BCryptPasswordEncoder();
+    }
 
     @Override
     @Bean
