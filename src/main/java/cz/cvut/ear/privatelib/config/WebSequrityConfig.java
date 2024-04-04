@@ -135,7 +135,7 @@ public class WebSequrityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/index.html", "/static/**", "/favicon.ico", "/manifest.json", "/login.html", "/mainpage.html", "/home.png", "/user.png").permitAll() // Permit all static resources
+                .antMatchers("/", "/index.html", "/static/**", "/static/build/**", "/favicon.ico", "/manifest.json", "/login.html", "/mainpage.html", "/home.png", "/user.png").permitAll() // Permit all static resources
                 .antMatchers("/users/authenticate", "/users/**", "/api/titles/**", "/api/authors/**", "/api/genres/**").permitAll() // Permit all API requests that should be publicly accessible
                 .anyRequest().authenticated()
                 .and()
